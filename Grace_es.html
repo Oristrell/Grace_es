@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="UTF-8">
+
+<title>GRACE Score Calculator</title>
+
+<style>
+
+body{
+background-color:#87CEEB;
+font-family:Arial, sans-serif;
+margin:0;
+padding:40px 0;
+}
+
+
+.container{
+background:#fffde7;
+width:650px;
+padding:30px;
+border-radius:12px;
+box-shadow:0 8px 20px rgba(0,0,0,0.15);
+margin:40px auto;
+padding-left:3cm;
+}
+
+h1{
+text-align:center;
+}
+
+label{
+font-weight:bold;
+}
+
+input, select{
+width:100%;
+padding:6px;
+margin-bottom:10px;
+}
+
+button{
+padding:10px;
+font-size:16px;
+margin-right:10px;
+}
+
+.result{
+margin-top:20px;
+font-size:20px;
+font-weight:bold;
+text-align:center;
+}
+
+.title{
+display:flex;
+align-items:center;
+justify-content:center;
+gap:15px;
+font-size:18px;
+font-weight:bold;
+color:#3366cc;
+border:2px solid #3366cc;
+border-radius:8px;
+background:#e6f0ff;
+padding:6px;
+margin-bottom:25px;
+}
+
+.title-text{
+flex-grow:1;
+text-align:center;
+margin-right:60px;
+}
+
+.header{
+font-weight:bold;
+text-align:center;
+}
+
+.header div{
+line-height:1.2;
+}
+
+.area{
+font-weight:normal;
+}
+
+button{
+padding:10px 20px;
+font-size:16px;
+border-radius:6px;
+border:none;
+cursor:pointer;
+margin-top:20px;
+margin-right:10px;
+background-color:#3366cc;
+color:white;
+}
+
+.buttons{
+text-align:center;
+margin-top:30px;
+}
+
+button:hover{opacity:0.85;}
+
+.result{
+font-size:20px;
+font-weight:bold;
+margin-top:20px;
+}
+
+.references{
+margin-top:35px;
+font-size:10px;
+line-height:1.4;
+color:#333;
+border-top:1px solid #ccc;
+padding-top:15px;
+}
+
+.figure{
+margin-top:25px;
+text-align:center;
+}
+
+.figure img{
+max-width:50%;
+height:auto;
+border-radius:6px;
+}
+
+.title-wrapper { text-align: center; }
+
+.logo{
+width:60px;   /* adjust as needed */
+height:auto;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+  <div class="title-wrapper">
+    <div class="title">
+      <a href="https://ormedica.wordpress.com/" target="_blank">
+      <img src="LogOM5.png" alt="Ormedica logo" class="logo">
+      </a>
+      <h1 class="title-text">Calculadora del Score GRACE</h1>
+    </div>
+  </div>
+
+
+<label>Edad (años)</label>
+<input type="number" id="ageYears">
+
+<label>Frecuencia cardíaca (lpm)</label>
+<input type="number" id="hrValue">
+
+<label>Presión arterial sistólica (mmHg)</label>
+<input type="number" id="sbpValue">
+
+<label>Creatinina (mg/dL)</label>
+<input type="number" step="0.1" id="creatinineValue">
+
+<label>Clase Killip</label>
+<select id="killipValue">
+<option value="1">I</option>
+<option value="2">II</option>
+<option value="3">III</option>
+<option value="4">IV</option>
+</select>
+
+<label>Paro cardíaco al ingreso</label>
+<select id="arrest">
+<option value="0">No</option>
+<option value="1">Si</option>
+</select>
+
+<label>Cambios en el segmento ST</label>
+<select id="st">
+<option value="0">No</option>
+<option value="1">Si</option>
+</select>
+
+<label>Elevación de enzimas cardíacos</label>
+<select id="enzymes">
+<option value="0">No</option>
+<option value="1">Si</option>
+</select>
+
+<button onclick="calculate()">Calcular</button>
+<button onclick="resetForm()">Reset</button>
+
+<div class="result" id="result"></div>
+
+</div>
+
+<script>
+
+
+function calculate() {
+
+    // Get values from inputs
+    let age = document.getElementById("ageYears").value;
+    let hr = document.getElementById("hrValue").value;
+    let sbp = document.getElementById("sbpValue").value;
+    let creatinine = document.getElementById("creatinineValue").value;
+    let killip = document.getElementById("killipValue").value;
+    let arrest = document.getElementById("arrest").value;
+    let st = document.getElementById("st").value;
+    let enzymes = document.getElementById("enzymes").value;
+
+    // Check if any field is empty
+    if (
+        age === "" || hr === "" || sbp === "" || creatinine === "" ||
+        killip === "" || arrest === "" || st === "" || enzymes === ""
+    ) {
+        document.getElementById("result").innerHTML =
+            "<span style='color:red;'>Por favor, rellene todos los campos para poder calcular el score.</span>";
+        return; // stop execution
+    }
+
+    // Convert to numbers
+    age = parseFloat(age);
+    hr = parseFloat(hr);
+    sbp = parseFloat(sbp);
+    creatinine = parseFloat(creatinine);
+    killip = parseInt(killip);
+    arrest = parseInt(arrest);
+    st = parseInt(st);
+    enzymes = parseInt(enzymes);
+
+    // Calculate GRACE points
+    let score = 0;
+
+    if (age < 30) score += 0;
+    else if (age < 40) score += 8;
+    else if (age < 50) score += 25;
+    else if (age < 60) score += 41;
+    else if (age < 70) score += 58;
+    else if (age < 80) score += 75;
+    else if (age < 90) score += 91;
+    else score += 100;
+
+    if (hr < 50) score += 0;
+    else if (hr < 70) score += 3;
+    else if (hr < 90) score += 9;
+    else if (hr < 110) score += 15;
+    else if (hr < 150) score += 24;
+    else if (hr < 200) score += 38;
+    else score += 46;
+
+    if (sbp < 80) score += 58;
+    else if (sbp < 100) score += 53;
+    else if (sbp < 120) score += 43;
+    else if (sbp < 140) score += 34;
+    else if (sbp < 160) score += 24;
+    else if (sbp < 200) score += 10;
+    else score += 0;
+
+    if (creatinine < 0.4) score += 1;
+    else if (creatinine < 0.8) score += 4;
+    else if (creatinine < 1.2) score += 7;
+    else if (creatinine < 1.6) score += 10;
+    else if (creatinine < 2) score += 13;
+    else if (creatinine < 4) score += 21;
+    else score += 28;
+
+    if (killip == 2) score += 20;
+    else if (killip == 3) score += 39;
+    else if (killip == 4) score += 59;
+
+    if (arrest == 1) score += 39;
+    if (st == 1) score += 28;
+    if (enzymes == 1) score += 14;
+
+    // Determine risk category
+    let risk = "";
+    if (score <= 108) risk = "Bajo riesgo";
+    else if (score <= 140) risk = "Riesgo intermedio";
+    else risk = "Alto riesgo";
+
+    // Calculate mortality probability using logistic regression
+    let z =
+        -7.7035 +
+        0.0531 * age +
+        0.0087 * hr -
+        0.0168 * sbp +
+        0.1823 * creatinine +
+        0.6931 * killip +
+        1.4586 * arrest +
+        0.4700 * st +
+        0.8755 * enzymes;
+
+    let probability = 1 / (1 + Math.exp(-z));
+    probability = (probability * 100).toFixed(2);
+
+    // Display results
+    document.getElementById("result").innerHTML =
+        "Score GRACE: " + score +
+        "<br>Categoría de riesgo: " + risk +
+        "<br>Probabilidad estimada de muerte: " + probability + " %";
+}
+
+function resetForm(){
+
+document.querySelectorAll("input").forEach(i=>i.value="");
+document.querySelectorAll("select").forEach(s=>s.selectedIndex=0);
+document.getElementById("result").innerHTML="";
+
+}
+
+</script>
+
+</body>
+
+</html>
